@@ -7,26 +7,38 @@ export const registerUser = async (user: User) => {
     const registerUrl = hostname ? hostname + '/auth/register' : '';
     const headers: Headers = new Headers();
     headers.set('Content-Type', 'application/json');
-    const response = await fetch(registerUrl, {
-        method: 'POST',
-        body: JSON.stringify(user),
-        headers: headers,
-    });
-    const respObj: AuthResponse = await response.json();
-    if (response.status != 200) {
-        respObj.status = response.status;
-        console.error(
-            `receieved status ${response.status} for register user for ${
-                user.userName
-            } response json was ${JSON.stringify(respObj)}`
-        );
-        return respObj;
-    }
+    let respObj: AuthResponse;
+    try {
+        const response = await fetch(registerUrl, {
+            method: 'POST',
+            body: JSON.stringify(user),
+            headers: headers,
+        });
+        respObj = await response.json();
+        if (response.status != 200) {
+            respObj.status = response.status;
+            console.error(
+                `receieved status ${response.status} for register user for ${
+                    user.userName
+                } response json was ${JSON.stringify(respObj)}`
+            );
+            return respObj;
+        }
 
-    if (response.status === 200) {
-        respObj.status = response.status;
-        console.debug('registration successfull');
-        console.info(`response json was ${JSON.stringify(respObj)}`);
+        if (response.status === 200) {
+            respObj.status = response.status;
+            console.debug('registration successfull');
+            console.info(`response json was ${JSON.stringify(respObj)}`);
+            return respObj;
+        }
+    } catch (error) {
+        console.error('Error occurred in registerUser', error);
+        respObj = {
+            status: 500,
+            error: 'Internal Server Error',
+            message: 'Internal Server Error',
+            token: '',
+        };
         return respObj;
     }
 };
@@ -39,26 +51,38 @@ export const loginUser = async (user: User) => {
     console.info(`loginUrl is ${loginUrl}`);
     const headers: Headers = new Headers();
     headers.set('Content-Type', 'application/json');
-    const response = await fetch(loginUrl, {
-        method: 'POST',
-        body: JSON.stringify(user),
-        headers: headers,
-    });
-    const respObj = await response.json();
-    if (response.status != 200) {
-        respObj.status = response.status;
-        console.error(
-            `receieved status ${response.status} for login user for ${
-                user.userName
-            } response json was ${JSON.stringify(respObj)}`
-        );
-        return respObj;
-    }
+    let respObj: AuthResponse;
+    try {
+        const response = await fetch(loginUrl, {
+            method: 'POST',
+            body: JSON.stringify(user),
+            headers: headers,
+        });
+        respObj = await response.json();
+        if (response.status != 200) {
+            respObj.status = response.status;
+            console.error(
+                `receieved status ${response.status} for login user for ${
+                    user.userName
+                } response json was ${JSON.stringify(respObj)}`
+            );
+            return respObj;
+        }
 
-    if (response.status === 200) {
-        respObj.status = response.status;
-        console.debug('login successfull');
-        console.info(`response json was ${JSON.stringify(respObj)}`);
+        if (response.status === 200) {
+            respObj.status = response.status;
+            console.debug('login successfull');
+            console.info(`response json was ${JSON.stringify(respObj)}`);
+            return respObj;
+        }
+    } catch (error) {
+        console.error('Error occurred in login user', error);
+        respObj = {
+            status: 500,
+            error: 'Internal Server Error',
+            message: 'Internal Server Error',
+            token: '',
+        };
         return respObj;
     }
 };
