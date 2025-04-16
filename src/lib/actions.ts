@@ -46,9 +46,9 @@ export async function login(state: FormState, formData: FormData) {
     console.info('validaion sucess calling API');
     const respObj = await loginUser(validatedFields.data);
     if (respObj?.status !== 200)
-      return {
-          message: respObj?.message,
-      };
+        return {
+            message: respObj?.message,
+        };
     if (respObj?.token === undefined) {
         console.error('token cannot be null not creating session');
         return;
@@ -58,7 +58,7 @@ export async function login(state: FormState, formData: FormData) {
 }
 
 export async function logout() {
-    deleteSession();
+    await deleteSession();
     redirect('/login');
 }
 
