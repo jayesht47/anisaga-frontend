@@ -14,6 +14,11 @@ export default async function Home() {
                         {animeList?.map((item, index) => (
                             <AnimeCard anime={item} key={`card-${index}`} />
                         ))}
+                        {animeList?.length === 0 && (
+                            <p className='text-3xl text-red-400'>
+                                Internal Server Error
+                            </p>
+                        )}
                     </div>
                 </div>
             }
