@@ -12,15 +12,27 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-import { useActionState } from 'react';
+import { useActionState, useContext, useEffect } from 'react';
 import { login } from '@/lib/actions';
 import { Loader2 } from 'lucide-react';
+import { AuthContext } from '@/lib/auth-provider';
+import { useRouter } from 'next/navigation';
 
 export function LoginForm({
     className,
     ...props
 }: React.ComponentPropsWithoutRef<'div'>) {
     const [state, action, isPending] = useActionState(login, undefined);
+    const auth = useContext(AuthContext);
+    const router = useRouter();
+    useEffect(() => {
+        if (!isPending) {
+            if (state?.message === 200) {
+                auth.setAuthState(true);
+                router.push('/dashboard');
+            }
+        }
+    }, [isPending, auth, state, router]);
     return (
         <div className={cn('flex flex-col gap-6', className)} {...props}>
             <Card>

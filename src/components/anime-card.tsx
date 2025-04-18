@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 
 interface CardProps {
     readonly anime: Anime;
+    readonly index: number;
 }
 
 export default function AnimeCard(props: CardProps) {
@@ -24,7 +25,9 @@ export default function AnimeCard(props: CardProps) {
                 />
             </CardContent>
             <CardFooter>
-                <CardTitle>{anime.name}</CardTitle>
+                <CardTitle>
+                    {props.index + 1}. {anime.name}
+                </CardTitle>
             </CardFooter>
         </Card>
     );

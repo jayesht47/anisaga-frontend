@@ -5,6 +5,12 @@ export type User = {
     password: string;
 };
 
+export type DisplayUser = {
+    name: string | undefined;
+    email: string;
+    avatar: string;
+};
+
 export const FormSchema = z.object({
     userName: z
         .string()
@@ -38,7 +44,7 @@ export type SessionPayload = {
 };
 
 export type AuthResponse = {
-    status:number;
+    status: number;
     error: string;
     message: string;
     token: string;

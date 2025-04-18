@@ -54,7 +54,10 @@ export async function login(state: FormState, formData: FormData) {
         return;
     }
     await createSession(validatedFields.data.userName, respObj?.token);
-    redirect('/dashboard');
+    return {
+        message: respObj?.status,
+    };
+    // redirect('/dashboard');
 }
 
 export async function logout() {
@@ -72,5 +75,19 @@ export const isLoggedIn = async () => {
     } catch (e) {
         console.error(`Exception occurred in isLoggedIn : ${e}`);
         return false;
+    }
+};
+
+export const getUserName = async () => {
+    try {
+        const cookie = (await cookies()).get('session')?.value;
+        console.log(`cookie is ${cookie}`);
+        if (cookie) {
+            const session = await decrypt(cookie);
+            return session?.sub;
+        } else return undefined;
+    } catch (e) {
+        console.error(`Exception occurred in getUserName : ${e}`);
+        return undefined;
     }
 };

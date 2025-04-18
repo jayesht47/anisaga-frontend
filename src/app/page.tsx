@@ -12,7 +12,7 @@ export default async function Home() {
                     </h1>
                     <div className='flex flex-wrap justify-center'>
                         {animeList?.map((item, index) => (
-                            <AnimeCard anime={item} key={`card-${index}`} />
+                            <AnimeCard anime={item} index={index} key={`card-${index}`} />
                         ))}
                         {animeList?.length === 0 && (
                             <p className='text-3xl text-red-400'>
