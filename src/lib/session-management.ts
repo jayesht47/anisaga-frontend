@@ -1,25 +1,24 @@
 import 'server-only';
 
-import { SignJWT, jwtVerify } from 'jose';
+import { base64url, EncryptJWT, jwtDecrypt } from 'jose';
 import { SessionPayload } from '@/lib/definitions';
 import { cookies } from 'next/headers';
 
-const secretKey = process.env.SESSION_SECRET;
-const encodedKey = new TextEncoder().encode(secretKey);
+const secretKey = process.env.SESSION_SECRET as string;
+const encodedKey = base64url.decode(secretKey);
 
 export async function encrypt(payload: SessionPayload) {
-    return new SignJWT(payload)
-        .setProtectedHeader({ alg: 'HS256' })
+    return await new EncryptJWT(payload)
+        .setProtectedHeader({ alg: 'dir', enc: 'A256GCM' })
+        .setSubject(payload.userName)
         .setIssuedAt()
         .setExpirationTime('7d')
-        .sign(encodedKey);
+        .encrypt(encodedKey);
 }
 
 export async function decrypt(session: string | undefined = '') {
     try {
-        const { payload } = await jwtVerify(session, encodedKey, {
-            algorithms: ['HS256'],
-        });
+        const { payload } = await jwtDecrypt(session, encodedKey);
         return payload;
     } catch (error) {
         console.error('Failed to verify session', error);
