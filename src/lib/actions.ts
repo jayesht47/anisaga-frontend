@@ -55,9 +55,8 @@ export async function login(state: FormState, formData: FormData) {
     }
     await createSession(validatedFields.data.userName, respObj?.token);
     return {
-        message: respObj?.status,
+        message: respObj?.status.toString(),
     };
-    // redirect('/dashboard');
 }
 
 export async function logout() {

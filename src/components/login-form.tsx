@@ -27,7 +27,7 @@ export function LoginForm({
     const router = useRouter();
     useEffect(() => {
         if (!isPending) {
-            if (state?.message === 200) {
+            if (state?.message === '200') {
                 auth.setAuthState(true);
                 router.push('/dashboard');
             }
