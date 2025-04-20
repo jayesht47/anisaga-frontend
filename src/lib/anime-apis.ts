@@ -76,6 +76,46 @@ export const getAnimeBySlug = async (slug: string | undefined) => {
     }
 };
 
+export const searchAnimeByName = async (
+    searchText: string | undefined | null
+) => {
+    try {
+        const hostname: string | undefined = process.env.SERVER_URL;
+        if (hostname == undefined)
+            throw new Error('server url not configured!');
+        if (searchText == undefined)
+            throw new Error('searchText cannot be undefined!');
+        const searchAnimeByNamePath = '/anime/search';
+        const searchAnimeByNameUrl = hostname
+            ? hostname + searchAnimeByNamePath + `?searchText=${searchText}`
+            : '';
+        console.log(`searchAnimeByNameUrl is ${searchAnimeByNameUrl}`);
+        const headers: Headers = new Headers();
+        headers.set('Content-Type', 'application/json');
+        const response = await fetch(searchAnimeByNameUrl, {
+            method: 'GET',
+            headers: headers,
+        });
+        if (response.status != 200) {
+            const respObj = await response.json();
+            console.error(
+                `receieved status ${
+                    response.status
+                } for searchAnimeByName, response json was ${JSON.stringify(
+                    respObj
+                )}`
+            );
+        }
+
+        if (response.status === 200) {
+            const respObj: [Anime] = await response.json();
+            return respObj;
+        }
+    } catch (e) {
+        console.error(`Exception occurred in searchAnimeByName`, e);
+    }
+};
+
 export const checkIfLiked = async (slug: string | undefined) => {
     try {
         const hostname: string | undefined = process.env.SERVER_URL;
