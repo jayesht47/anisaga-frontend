@@ -75,7 +75,7 @@ export function LoginForm({
                                         {state.errors.password}
                                     </p>
                                 )}
-                                {state?.message && (
+                                {state?.message && state?.message !== '200' && (
                                     <p className='text-red-400'>
                                         {state.message}
                                     </p>
