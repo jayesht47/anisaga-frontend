@@ -34,7 +34,7 @@ export function SearchResultTable(props: SearchResultProps) {
                                 <div className='font-thin'>
                                     Released{' '}
                                     <span>
-                                        {anime.startDate.substring(0, 4)}
+                                        {anime?.startDate?.substring(0, 4)}
                                     </span>
                                     <br />
                                     Average Rating :{' '}
