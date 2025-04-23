@@ -67,3 +67,9 @@ export type Anime = {
     images: AnimeImage;
     genres: [string] | undefined;
 };
+
+export type RecommendationResponse = {
+    status: number;
+    data: [Anime] | [];
+    error: string;
+};

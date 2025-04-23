@@ -1,5 +1,12 @@
-import 'server-only';
-import { AuthResponse, User } from './definitions';
+'use server';
+import {
+    AuthResponse,
+    RecommendationResponse,
+    SessionPayload,
+    User,
+} from './definitions';
+import { cookies } from 'next/headers';
+import { decrypt } from './session-management';
 
 export const registerUser = async (user: User) => {
     const hostname: string | undefined = process.env.SERVER_URL;
@@ -82,6 +89,62 @@ export const loginUser = async (user: User) => {
             error: 'Internal Server Error',
             message: 'Internal Server Error',
             token: '',
+        };
+        return respObj;
+    }
+};
+
+export const getUserRecommendations = async () => {
+    const hostname: string | undefined = process.env.SERVER_URL;
+    console.log(`process.env.SERVER_URL is ${process.env.SERVER_URL}`);
+    if (hostname == undefined) throw new Error('server url not configured!');
+    const headers: Headers = new Headers();
+    headers.set('Content-Type', 'application/json');
+    let respObj: RecommendationResponse;
+    try {
+        const cookie = (await cookies()).get('session')?.value;
+        let sessionPayload: SessionPayload;
+        const session = await decrypt(cookie);
+        if (session?.sub) {
+            sessionPayload = JSON.parse(session.sub);
+        } else {
+            throw new Error('failed to decrypt session');
+        }
+        const userName = sessionPayload.userName;
+        headers.set('Authorization', `Bearer ${sessionPayload.token}`);
+        console.log(`token is ${sessionPayload.token}`);
+        const reqBody = {
+            userName: userName,
+            regenRecommendations: false,
+        };
+        console.log(`reqBody is ${JSON.stringify(reqBody)}`);
+        const recommendationsUrl = hostname
+            ? hostname + `/users/user/${userName}/recommendations`
+            : '';
+        console.info(`recommendationsUrl is ${recommendationsUrl}`);
+        const response = await fetch(recommendationsUrl, {
+            method: 'POST',
+            body: JSON.stringify(reqBody),
+            headers: headers,
+        });
+        const apiResponse = await response.json();
+        respObj = {
+            data: apiResponse, // Assign the actual API response to respObj.data
+            error: response.ok ? 'false' : 'true',
+            status: response.status,
+        };
+        if (response.status != 200) {
+            console.error(
+                `receieved status ${response.status} getUserRecommendations for ${userName} `
+            );
+        }
+        return respObj;
+    } catch (error) {
+        console.error('Error occurred in getUserRecommendations', error);
+        respObj = {
+            data: [],
+            error: 'true',
+            status: 500,
         };
         return respObj;
     }
