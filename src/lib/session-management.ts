@@ -10,7 +10,7 @@ const encodedKey = base64url.decode(secretKey);
 export async function encrypt(payload: SessionPayload) {
     return await new EncryptJWT(payload)
         .setProtectedHeader({ alg: 'dir', enc: 'A256GCM' })
-        .setSubject(payload.userName)
+        .setSubject(JSON.stringify(payload))
         .setIssuedAt()
         .setExpirationTime('7d')
         .encrypt(encodedKey);
