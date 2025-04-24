@@ -2,9 +2,9 @@
 
 import { cookies } from 'next/headers';
 import {
+    AnimeAPIResponse,
     FormSchema,
     FormState,
-    RecommendationResponse,
     SessionPayload,
 } from './definitions';
 import { createSession, decrypt, deleteSession } from './session-management';
@@ -106,7 +106,7 @@ export const updateRecommendations = async () => {
     if (hostname == undefined) throw new Error('server url not configured!');
     const headers: Headers = new Headers();
     headers.set('Content-Type', 'application/json');
-    let respObj: RecommendationResponse;
+    let respObj: AnimeAPIResponse;
     try {
         const cookie = (await cookies()).get('session')?.value;
         let sessionPayload: SessionPayload;

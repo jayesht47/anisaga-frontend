@@ -12,7 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { updateRecommendations } from '@/lib/actions';
 import { getLikedAnimes } from '@/lib/anime-apis';
-import { Anime, RecommendationResponse } from '@/lib/definitions';
+import { AnimeAPIResponse } from '@/lib/definitions';
 import { getUserRecommendations } from '@/lib/user-apis';
 import { RefreshCcw } from 'lucide-react';
 import Image from 'next/image';
@@ -20,9 +20,11 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function Page() {
-    const [userLikes, setUserLikes] = useState<[Anime] | undefined>(undefined);
+    const [userLikes, setUserLikes] = useState<AnimeAPIResponse | undefined>(
+        undefined
+    );
     const [Recommendations, setRecommendations] = useState<
-        RecommendationResponse | undefined
+        AnimeAPIResponse | undefined
     >();
     const router = useRouter();
     useEffect(() => {
@@ -45,10 +47,10 @@ export default function Page() {
             <div className='text-bold text-4xl'>My Likes</div>
             <Separator className='my-1' />
             <div className='justify-items-center mx-10'>
-                {userLikes && (
+                {userLikes?.status === 200 && (
                     <Carousel className='w-full max-w-5xl'>
                         <CarouselContent>
-                            {userLikes?.map((anime) => (
+                            {userLikes.data?.map((anime) => (
                                 <CarouselItem
                                     key={anime.slug}
                                     className='md:basis-1/2 lg:basis-1/5'
@@ -82,14 +84,23 @@ export default function Page() {
                         <CarouselNext />
                     </Carousel>
                 )}
-                {!userLikes && <Skeleton className='h-64 w-5xl mx-4' />}
+                {!userLikes?.status && <Skeleton className='h-64 w-5xl mx-4' />}
+                {userLikes?.error == 'true' && (
+                    <span className='font-semibold text-xl text-red-400'>
+                        Internal Server Error
+                    </span>
+                )}
             </div>
             <Separator className='my-1' />
             <div className='flex justify-between'>
                 <div className='text-semibold text-xl'>
                     Recommendations Based on likes
                 </div>
-                <Button variant={'outline'} className='hover:cursor-pointer' onClick={refreshRecommendations}>
+                <Button
+                    variant={'outline'}
+                    className='hover:cursor-pointer'
+                    onClick={refreshRecommendations}
+                >
                     <RefreshCcw />
                 </Button>
             </div>

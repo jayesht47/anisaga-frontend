@@ -68,7 +68,7 @@ export type Anime = {
     genres: [string] | undefined;
 };
 
-export type RecommendationResponse = {
+export type AnimeAPIResponse = {
     status: number;
     data: [Anime] | [];
     error: string;

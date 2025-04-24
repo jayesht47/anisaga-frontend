@@ -1,7 +1,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { Anime } from './definitions';
+import { Anime, AnimeAPIResponse } from './definitions';
 import { decrypt } from './session-management';
 
 export const getTrendingAnimeList = async () => {
@@ -246,6 +246,7 @@ export const removeFromLikes = async (slug: string | undefined) => {
 
 export const getLikedAnimes = async () => {
     try {
+        console.log(`getLikedAnimes called`);
         const hostName: string | undefined = process.env.SERVER_URL;
         if (hostName == undefined)
             throw new Error('server url not configured!');
@@ -262,11 +263,20 @@ export const getLikedAnimes = async () => {
         const response = await fetch(getLikesUrl, {
             headers,
         });
-        if (response.ok) {
-            const respObj: [Anime] = await response.json();
-            return respObj;
-        }
+        const apiResponse = await response.json();
+        const respObj: AnimeAPIResponse = {
+            data: apiResponse, // Assign the actual API response to respObj.data
+            error: response.ok ? 'false' : 'true',
+            status: response.status,
+        };
+        return respObj;
     } catch (e) {
         console.error(`Exception occurred in getLikes ${e}`);
+        const respObj: AnimeAPIResponse = {
+            data: [], // Assign the actual API response to respObj.data
+            error: 'true',
+            status: 500,
+        };
+        return respObj;
     }
 };
