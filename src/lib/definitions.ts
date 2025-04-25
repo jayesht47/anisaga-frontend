@@ -73,3 +73,9 @@ export type AnimeAPIResponse = {
     data: [Anime] | [];
     error: string;
 };
+
+export type APIResponse = {
+    status: number;
+    data?: unknown;
+    error: string;
+};
