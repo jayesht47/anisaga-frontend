@@ -3,6 +3,7 @@
 import { cookies } from 'next/headers';
 import {
     AnimeAPIResponse,
+    APIResponse,
     FormSchema,
     FormState,
     SessionPayload,
@@ -147,6 +148,59 @@ export const updateRecommendations = async () => {
         return respObj;
     } catch (error) {
         console.error('Error occurred in getUserRecommendations', error);
+        respObj = {
+            data: [],
+            error: 'true',
+            status: 500,
+        };
+        return respObj;
+    }
+};
+
+
+export const createNewCustomList = async (listName: string, slug: string) => {
+    const hostname: string | undefined = process.env.SERVER_URL;
+    console.log(`process.env.SERVER_URL is ${process.env.SERVER_URL}`);
+    if (hostname == undefined) throw new Error('server url not configured!');
+    const headers: Headers = new Headers();
+    headers.set('Content-Type', 'application/json');
+    let respObj: APIResponse;
+    try {
+        const cookie = (await cookies()).get('session')?.value;
+        let sessionPayload: SessionPayload;
+        const session = await decrypt(cookie);
+        if (session?.sub) {
+            sessionPayload = JSON.parse(session.sub);
+        } else {
+            throw new Error('failed to decrypt session');
+        }
+        const userName = sessionPayload.userName;
+        headers.set('Authorization', `Bearer ${sessionPayload.token}`);
+        const reqBody = {
+            listName: listName,
+            entries: [slug],
+        };
+        const newCustomListUrl = hostname
+            ? hostname + `/users/user/${userName}/customList/add`
+            : '';
+        console.info(`newCustomListUrl is ${newCustomListUrl}`);
+        const response = await fetch(newCustomListUrl, {
+            method: 'POST',
+            body: JSON.stringify(reqBody),
+            headers: headers,
+        });
+        respObj = {
+            error: response.ok ? 'false' : 'true',
+            status: response.status,
+        };
+        if (response.status != 200) {
+            console.error(
+                `receieved status ${response.status} createNewCustomList for ${userName} `
+            );
+        }
+        return respObj;
+    } catch (error) {
+        console.error('Error occurred in createNewCustomList', error);
         respObj = {
             data: [],
             error: 'true',
