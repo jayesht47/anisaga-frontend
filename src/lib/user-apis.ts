@@ -1,12 +1,8 @@
 'use server';
-import {
-    AuthResponse,
-    RecommendationResponse,
-    SessionPayload,
-    User,
-} from './definitions';
+import { APIResponse, AuthResponse, SessionPayload, User } from './definitions';
 import { cookies } from 'next/headers';
 import { decrypt } from './session-management';
+import { AnimeAPIResponse } from '@/lib/definitions';
 
 export const registerUser = async (user: User) => {
     const hostname: string | undefined = process.env.SERVER_URL;
@@ -100,7 +96,7 @@ export const getUserRecommendations = async () => {
     if (hostname == undefined) throw new Error('server url not configured!');
     const headers: Headers = new Headers();
     headers.set('Content-Type', 'application/json');
-    let respObj: RecommendationResponse;
+    let respObj: AnimeAPIResponse;
     try {
         const cookie = (await cookies()).get('session')?.value;
         let sessionPayload: SessionPayload;
@@ -130,6 +126,56 @@ export const getUserRecommendations = async () => {
         const apiResponse = await response.json();
         respObj = {
             data: apiResponse, // Assign the actual API response to respObj.data
+            error: response.ok ? 'false' : 'true',
+            status: response.status,
+        };
+        if (response.status != 200) {
+            console.error(
+                `receieved status ${response.status} getUserRecommendations for ${userName} `
+            );
+        }
+        return respObj;
+    } catch (error) {
+        console.error('Error occurred in getUserRecommendations', error);
+        respObj = {
+            data: [],
+            error: 'true',
+            status: 500,
+        };
+        return respObj;
+    }
+};
+
+export const getUserLists = async () => {
+    const hostname: string | undefined = process.env.SERVER_URL;
+    console.log(`process.env.SERVER_URL is ${process.env.SERVER_URL}`);
+    if (hostname == undefined) throw new Error('server url not configured!');
+    const headers: Headers = new Headers();
+    headers.set('Content-Type', 'application/json');
+    let respObj: APIResponse;
+    try {
+        const cookie = (await cookies()).get('session')?.value;
+        let sessionPayload: SessionPayload;
+        const session = await decrypt(cookie);
+        if (session?.sub) {
+            sessionPayload = JSON.parse(session.sub);
+        } else {
+            throw new Error('failed to decrypt session');
+        }
+        const userName = sessionPayload.userName;
+        headers.set('Authorization', `Bearer ${sessionPayload.token}`);
+        const customlistNamesUri = hostname
+            ? hostname + `/users/user/${userName}/customList`
+            : '';
+        console.info(`recommendationsUrl is ${customlistNamesUri}`);
+        const response = await fetch(customlistNamesUri, {
+            method: 'GET',
+            headers: headers,
+        });
+        let apiResponse = await response.json();
+        apiResponse = (apiResponse as string[]).sort();
+        respObj = {
+            data: apiResponse,
             error: response.ok ? 'false' : 'true',
             status: response.status,
         };
