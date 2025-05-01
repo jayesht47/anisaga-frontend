@@ -2,6 +2,7 @@ import { getAnimeBySlug } from '@/lib/anime-apis';
 import Image from 'next/image';
 import { Card, CardContent } from '../ui/card';
 import Like from './like';
+import CustomList from './CustomList';
 
 interface AnimeProps {
     readonly slug: string | undefined;
@@ -31,6 +32,7 @@ export default async function Anime(props: AnimeProps) {
                 <div className='text-5xl my-2 flex'>
                     {anime?.name}
                     <Like />
+                    <CustomList />
                 </div>
                 <div className='my-2'>
                     <span className='text-xl font-bold'>Synopsis</span>
