@@ -1,7 +1,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
-import { Anime, AnimeAPIResponse } from './definitions';
+import { Anime, AnimeAPIResponse, APIResponse } from './definitions';
 import { decrypt } from './session-management';
 
 export const getTrendingAnimeList = async () => {
@@ -273,6 +273,44 @@ export const getLikedAnimes = async () => {
     } catch (e) {
         console.error(`Exception occurred in getLikes ${e}`);
         const respObj: AnimeAPIResponse = {
+            data: [], // Assign the actual API response to respObj.data
+            error: 'true',
+            status: 500,
+        };
+        return respObj;
+    }
+};
+
+export const getCustomList = async (listName:string) => {
+    try {
+        const hostName: string | undefined = process.env.SERVER_URL;
+        if (hostName == undefined)
+            throw new Error('server url not configured!');
+        if (!listName || listName.trim().length === 0)
+            throw new Error('listName required');
+        const cookie = (await cookies()).get('session')?.value;
+        const session = await decrypt(cookie);
+        const userName: string = session?.userName as string;
+        if (!userName) throw new Error('User session not valid!');
+        const token: string = session?.token as string;
+        const getCustomListPath = `/users/user/${userName}/customList/${listName}`;
+        const getCustomListUrl = hostName + getCustomListPath;
+        const headers: Headers = new Headers();
+        headers.set('Content-Type', 'application/json');
+        headers.set('Authorization', `Bearer ${token}`);
+        const response = await fetch(getCustomListUrl, {
+            headers,
+        });
+        const apiResponse = await response.json();
+        const respObj: APIResponse = {
+            data: apiResponse, // Assign the actual API response to respObj.data
+            error: response.ok ? 'false' : 'true',
+            status: response.status,
+        };
+        return respObj;
+    } catch (e) {
+        console.error(`Exception occurred in getCustomList ${e}`);
+        const respObj: APIResponse = {
             data: [], // Assign the actual API response to respObj.data
             error: 'true',
             status: 500,
