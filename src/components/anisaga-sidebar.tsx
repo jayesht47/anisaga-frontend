@@ -40,7 +40,7 @@ export function AniSagaSidebar() {
         };
         updateUser();
         updateAuthState();
-    }, []);
+    }, [auth]);
     return (
         <Sidebar collapsible='offcanvas'>
             <SidebarHeader>
