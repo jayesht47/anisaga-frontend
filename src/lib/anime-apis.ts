@@ -281,7 +281,7 @@ export const getLikedAnimes = async () => {
     }
 };
 
-export const getCustomList = async (listName:string) => {
+export const getCustomList = async (listName: string) => {
     try {
         const hostName: string | undefined = process.env.SERVER_URL;
         if (hostName == undefined)
@@ -303,7 +303,7 @@ export const getCustomList = async (listName:string) => {
         });
         const apiResponse = await response.json();
         const respObj: APIResponse = {
-            data: apiResponse, // Assign the actual API response to respObj.data
+            data: apiResponse as Anime[], // Assign the actual API response to respObj.data
             error: response.ok ? 'false' : 'true',
             status: response.status,
         };
