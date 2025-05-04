@@ -1,9 +1,7 @@
-// 'use client';
 import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { Anime } from '@/lib/definitions';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 interface CardProps {
     readonly anime: Anime;
