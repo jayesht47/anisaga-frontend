@@ -20,10 +20,12 @@ import { getUserName, isLoggedIn } from '@/lib/actions';
 import { DisplayUser } from '@/lib/definitions';
 import { useRouter } from 'next/navigation';
 import { AuthContext } from '@/lib/auth-provider';
+import { getUserLists } from '@/lib/user-apis';
 
 export function AniSagaSidebar() {
     const auth = useContext(AuthContext);
     const [user, setUser] = useState<DisplayUser>();
+    const [userLists, setUserLists] = useState<string[]>();
 
     const router = useRouter();
 
@@ -38,8 +40,14 @@ export function AniSagaSidebar() {
         const updateAuthState = async () => {
             auth.setAuthState(await isLoggedIn());
         };
+        const updateUserLists = async () => {
+            const resp = await getUserLists();
+            const lists = resp.data as string[];
+            setUserLists(lists);
+        };
         updateUser();
         updateAuthState();
+        updateUserLists();
     }, [auth]);
     return (
         <Sidebar collapsible='offcanvas'>
@@ -92,6 +100,24 @@ export function AniSagaSidebar() {
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
+                {userLists && userLists.length > 0 && (
+                    <SidebarGroup>
+                        <SidebarGroupLabel>User Lists</SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {userLists.map((entry) => (
+                                    <SidebarMenuItem key={`user-list-${entry}`}>
+                                        <SidebarMenuButton>
+                                            <Link href={`/user-list/${entry}`}>
+                                                <span>{entry}</span>
+                                            </Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                )}
             </SidebarContent>
             <SidebarFooter>
                 {auth.authState && user && <NavUser user={user} />}
