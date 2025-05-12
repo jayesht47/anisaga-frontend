@@ -17,16 +17,25 @@ export default async function middleware(req: NextRequest) {
     if (isDisabledRoute) return NextResponse.redirect(new URL('/', req.url));
 
     if (isPublicRoute && !isLoginSignupPath) return NextResponse.next(); //If it is a public page proceed to next without checking for session.
-    const cookie = (await cookies()).get('session')?.value;
-    const session = await decrypt(cookie);
+    try {
+        const cookie = (await cookies()).get('session')?.value;
+        if (cookie !== undefined) {
+            console.log(`cookie is ${cookie}`);
+            const session = await decrypt(cookie);
 
-    if (isPrivateRoute && !session?.userName) {
-        return NextResponse.redirect(new URL('/login', req.nextUrl));
-    }
+            if (isPrivateRoute && !session?.userName) {
+                return NextResponse.redirect(new URL('/login', req.nextUrl));
+            }
 
-    if (isLoginSignupPath && session?.userName) {
-        // user is already authenticated redirect to /dashboard
-        return NextResponse.redirect(new URL('/dashboard', req.nextUrl));
+            if (isLoginSignupPath && session?.userName) {
+                // user is already authenticated redirect to /dashboard
+                return NextResponse.redirect(
+                    new URL('/dashboard', req.nextUrl)
+                );
+            }
+        }
+    } catch (error) {
+        console.error('Error occurred in middleware!', error);
     }
 
     // setting current path name to use in server components
