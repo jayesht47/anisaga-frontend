@@ -157,7 +157,6 @@ export const updateRecommendations = async () => {
     }
 };
 
-
 export const createNewCustomList = async (listName: string, slug: string) => {
     const hostname: string | undefined = process.env.SERVER_URL;
     console.log(`process.env.SERVER_URL is ${process.env.SERVER_URL}`);
@@ -234,7 +233,9 @@ export const addToExistingCustomList = async (
             ? hostname +
               `/users/user/${userName}/customList/${listName}/add/entry/${slug}`
             : '';
-        console.info(`addToExistingCustomListUrl is ${addToExistingCustomListUrl}`);
+        console.info(
+            `addToExistingCustomListUrl is ${addToExistingCustomListUrl}`
+        );
         const response = await fetch(addToExistingCustomListUrl, {
             method: 'POST',
             headers: headers,
@@ -251,6 +252,58 @@ export const addToExistingCustomList = async (
         return respObj;
     } catch (error) {
         console.error('Error occurred in addToExistingCustomList', error);
+        respObj = {
+            data: [],
+            error: 'true',
+            status: 500,
+        };
+        return respObj;
+    }
+};
+
+export const removeFromCustomList = async (listName: string, slug: string) => {
+    const hostname: string | undefined = process.env.SERVER_URL;
+    if (hostname == undefined) throw new Error('server url not configured!');
+    if (listName.trim().length === 0)
+        throw new Error('listName cannot be empty!');
+    if (slug.trim().length === 0) throw new Error('slug cannot be empty!');
+    const headers: Headers = new Headers();
+    headers.set('Content-Type', 'application/json');
+    let respObj: APIResponse;
+    try {
+        const cookie = (await cookies()).get('session')?.value;
+        let sessionPayload: SessionPayload;
+        const session = await decrypt(cookie);
+        if (session?.sub) {
+            sessionPayload = JSON.parse(session.sub);
+        } else {
+            throw new Error('failed to decrypt session');
+        }
+        const userName = sessionPayload.userName;
+        headers.set('Authorization', `Bearer ${sessionPayload.token}`);
+        const removeFromExistingCustomListUrl = hostname
+            ? hostname +
+              `/users/user/${userName}/customList/${listName}/remove/entry/${slug}`
+            : '';
+        console.info(
+            `removeFromExistingCustomListUrl is ${removeFromExistingCustomListUrl}`
+        );
+        const response = await fetch(removeFromExistingCustomListUrl, {
+            method: 'DELETE',
+            headers: headers,
+        });
+        respObj = {
+            error: response.ok ? 'false' : 'true',
+            status: response.status,
+        };
+        if (response.status != 200) {
+            console.error(
+                `receieved status ${response.status} removeFromCustomList for ${userName} `
+            );
+        }
+        return respObj;
+    } catch (error) {
+        console.error('Error occurred in removeFromCustomList', error);
         respObj = {
             data: [],
             error: 'true',

@@ -2,10 +2,12 @@ import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { Anime } from '@/lib/definitions';
 import Image from 'next/image';
 import Link from 'next/link';
+import RemoveFromCustomListButton from './anime/RemoveFromCustomListButton';
 
 interface CardProps {
     readonly anime: Anime;
     readonly index: number;
+    readonly includeRemoveIcon?: boolean;
 }
 
 export default function AnimeCard(props: CardProps) {
@@ -25,10 +27,13 @@ export default function AnimeCard(props: CardProps) {
                     />
                 </Link>
             </CardContent>
-            <CardFooter>
+            <CardFooter className='flex justify-between'>
                 <CardTitle>
                     {props.index + 1}. {anime.name}
                 </CardTitle>
+                {props.includeRemoveIcon && (
+                    <RemoveFromCustomListButton slug={anime.slug} />
+                )}
             </CardFooter>
         </Card>
     );
