@@ -1,7 +1,7 @@
 import "server-only";
 
 import { cookies } from "next/headers";
-import { decrypt } from "@/app/lib/session-management";
+import { decrypt } from "@/lib/session-management";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 
