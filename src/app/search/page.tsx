@@ -6,7 +6,7 @@ import { searchAnimeByName } from '@/lib/anime-apis';
 import { Anime } from '@/lib/definitions';
 import { SearchIcon } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 export default function Page() {
     const [animeList, setAnimeList] = useState<[Anime]>();
@@ -54,37 +54,41 @@ export default function Page() {
     }, []);
 
     return (
-        <div className='w-full flex content-center'>
-            <div className='w-full'>
-                <header className='text-center font-semibold text-3xl mt-10'>
-                    Search AniSaga
-                </header>
-                <div className='flex justify-center mt-10'>
-                    <Input
-                        type='text'
-                        id='search-text'
-                        className='max-w-sm self-center '
-                    />
-                    <Button
-                        variant={'default'}
-                        className='mx-2  hover:cursor-pointer'
-                        onClick={searchClickHanlder}
-                    >
-                        <SearchIcon />
-                        Search
-                    </Button>
-                </div>
-                <div className='w-full flex justify-center'>
-                    {errorMsg && (
-                        <span className='text-red-400 font-semibold text-center my-2'>
-                            {errorMsg}
-                        </span>
-                    )}
-                </div>
-                <div className='m-10'>
-                    {animeList && <SearchResultTable animeList={animeList} />}
+        <Suspense>
+            <div className='w-full flex content-center'>
+                <div className='w-full'>
+                    <header className='text-center font-semibold text-3xl mt-10'>
+                        Search AniSaga
+                    </header>
+                    <div className='flex justify-center mt-10'>
+                        <Input
+                            type='text'
+                            id='search-text'
+                            className='max-w-sm self-center '
+                        />
+                        <Button
+                            variant={'default'}
+                            className='mx-2  hover:cursor-pointer'
+                            onClick={searchClickHanlder}
+                        >
+                            <SearchIcon />
+                            Search
+                        </Button>
+                    </div>
+                    <div className='w-full flex justify-center'>
+                        {errorMsg && (
+                            <span className='text-red-400 font-semibold text-center my-2'>
+                                {errorMsg}
+                            </span>
+                        )}
+                    </div>
+                    <div className='m-10'>
+                        {animeList && (
+                            <SearchResultTable animeList={animeList} />
+                        )}
+                    </div>
                 </div>
             </div>
-        </div>
+        </Suspense>
     );
 }
