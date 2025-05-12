@@ -13,15 +13,16 @@ export default function Page() {
     const [errorMsg, setErrorMsg] = useState<string>();
     const router = useRouter();
     const pathName = usePathname();
-    const searchParams = new URLSearchParams(document.location.search);
 
     const searchClickHanlder = async () => {
-        setAnimeList(undefined);
-        setErrorMsg('');
-        const searchText = (
-            document.getElementById('search-text') as HTMLInputElement
-        ).value;
-        await searchAnime(searchText);
+        if (document !== undefined) {
+            setAnimeList(undefined);
+            setErrorMsg('');
+            const searchText = (
+                document.getElementById('search-text') as HTMLInputElement
+            ).value;
+            await searchAnime(searchText);
+        }
     };
 
     const searchAnime = async (searchtext: string | null) => {
@@ -43,13 +44,16 @@ export default function Page() {
     };
 
     useEffect(() => {
-        const searchText = searchParams.get('searchText');
-        const searchField = document.getElementById(
-            'search-text'
-        ) as HTMLInputElement;
-        if (searchText) {
-            searchField.value = searchText;
-            searchAnime(searchText);
+        if (document !== undefined) {
+            const searchParams = new URLSearchParams(document.location.search);
+            const searchText = searchParams.get('searchText');
+            const searchField = document.getElementById(
+                'search-text'
+            ) as HTMLInputElement;
+            if (searchText) {
+                searchField.value = searchText;
+                searchAnime(searchText);
+            }
         }
     }, []);
 
