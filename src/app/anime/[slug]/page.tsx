@@ -45,7 +45,7 @@ export default function Page() {
             )}
             <div className='flex-row lg:w-2/3 lg:me-20'>
                 {anime && (
-                    <div className='text-3xl justify-between mx-5 my-2 flex lg:text-5xl lg:mx-0 '>
+                    <div className='text-3xl justify-between mx-5 my-2 flex lg:text-4xl lg:mx-0 '>
                         <div>{anime?.name}</div>
                         <div className='flex'>
                             <Like />
@@ -66,31 +66,35 @@ export default function Page() {
                 <hr className='my-1'></hr>
                 {anime?.genres?.length !== undefined &&
                     anime?.genres?.length > 0 && (
-                        <div className='flex my-2'>
-                            <div className='font-bold'>Genres : </div>
-                            {anime?.genres?.map((genre, index) => {
-                                return (
-                                    <div
-                                        className='self-center	mx-1'
-                                        key={genre}
-                                    >
-                                        {anime.genres?.length !== index + 1 &&
-                                            genre + ','}
-                                        {anime.genres?.length === index + 1 &&
-                                            genre}
-                                    </div>
-                                );
-                            })}
+                        <div className='flex my-2 mx-5 lg:mx-0'>
+                            <div className='font-bold self-center'>Genres:</div>
+                            <div className='flex overflow-scroll'>
+                                {anime?.genres?.map((genre, index) => {
+                                    return (
+                                        <div
+                                            className='self-center mx-1'
+                                            key={genre}
+                                        >
+                                            {anime.genres?.length !==
+                                                index + 1 && genre + ','}
+                                            {anime.genres?.length ===
+                                                index + 1 && genre}
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
                     )}
                 <div className='flex my-2 '>
-                    <div className='font-bold'>Number of Episodes :</div>
-                    <div className='mx-1 self-center'>
+                    <div className='font-bold mx-5 lg:mx-0'>
+                        Number of Episodes :
+                    </div>
+                    <div className='self-center lg:mx-1'>
                         {anime?.episodeCount}
                     </div>
                 </div>
                 <div className='flex my-2 '>
-                    <div className='font-bold'>Trailer : </div>
+                    <div className='font-bold mx-5 lg:mx-0'>Trailer : </div>
                     <a
                         href={
                             'https://www.youtube.com/watch?v=' +
