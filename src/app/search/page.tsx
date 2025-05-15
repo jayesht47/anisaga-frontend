@@ -63,7 +63,7 @@ export default function Page() {
                 <header className='text-center font-semibold text-3xl mt-10'>
                     Search AniSaga
                 </header>
-                <div className='flex justify-center mt-10'>
+                <div className='flex justify-center mt-10 mx-10 md:mx-0'>
                     <Input
                         type='text'
                         id='search-text'

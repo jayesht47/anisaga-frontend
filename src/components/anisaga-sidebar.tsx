@@ -26,7 +26,6 @@ export function AniSagaSidebar() {
     const auth = useContext(AuthContext);
     const [user, setUser] = useState<DisplayUser>();
     const [userLists, setUserLists] = useState<string[]>();
-
     const router = useRouter();
 
     const loginClickHandler = () => {
