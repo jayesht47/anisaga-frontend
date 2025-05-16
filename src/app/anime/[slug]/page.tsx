@@ -68,7 +68,7 @@ export default function Page() {
                     anime?.genres?.length > 0 && (
                         <div className='flex my-2 mx-5 lg:mx-0'>
                             <div className='font-bold self-center'>Genres:</div>
-                            <div className='flex overflow-scroll'>
+                            <div className='flex overflow-scroll lg:overflow-hidden'>
                                 {anime?.genres?.map((genre, index) => {
                                     return (
                                         <div
